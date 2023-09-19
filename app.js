@@ -1,18 +1,22 @@
 const express = require("express");
 const connectDB = require("./db");
 const User = require("./user");
+const { default: listEndpoints } = require("list_end_points");
+const morgan = require("morgan");
 
 const app = express();
 app.use(express.json());
+app.use(morgan("dev"));
 
 connectDB();
 
 // Create a new User
 app.post("/users", async (req, res) => {
  try {
-  const { name, price, quantity } = req.body;
+  const { name, role } = req.body;
   const user = new User({ name, role });
   await user.save();
+  console.log("saving users")
   res.json({ success: true });
  } catch (error) {
   res.status(500).send(error.message);
@@ -54,6 +58,7 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 const port = 5000;
+listEndpoints(app);
 
 app.listen(port, () => {
  console.log("API server started on port 5000");
